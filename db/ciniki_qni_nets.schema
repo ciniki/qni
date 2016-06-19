@@ -1,0 +1,75 @@
+#
+# Description
+# -----------
+# The qni nets table stores information about ham radio nets that are related
+# to the club (business in ciniki nomwnclature) club managing the net..
+# This module was developed to support ham radio nets and gatherings.
+# NOTE: club (business) is used in the database and modules to track which club is related to the 
+# NOTE: operators (users) are separate from the club (business) and can be related to several clubs
+#
+#     nets - DFW Traffic Daily Early, DFW Daily Daily Late
+#        qni net occurances - one individual occurance of a net event EXAMPLE: Monday 18:30, Monday 23:00
+#            qni net logs
+#    qni net types - fixed list decided by me, allows people to select from a short list of types
+#            emergency
+#            practice / drill
+#            ???
+#
+# NOTE: separate tables will be used for logs unaffiliated with nets
+# NOTE: cross-references between nets tables and unaffiliated nets can be done separately to correlate
+#
+# Fields
+# ------
+# id:                The ID assigned to the net. NOTE: this is required for sync
+# uuid:                The Universal Unique ID.    NOTE: this is required for sync
+# business_id:        The club (ciniki lingo business) the net is attached to.    NOTE: this is required for sync
+# name:                The name for the net.
+# permalink:        The permalink for the URL to open the net.    NOTE: Must be unique  EXAMPLE: http://qruqsp.org/ylntx/qni/20160306
+#
+# net_type:            fixed list decided by me, allows people to select from a short list of types
+#                    20 - Emergency - EXAMPLES: Katrina, 9/11, Major catastrophe
+#                    40 - Priority - EXAMPLES: 
+#                    60 - Health & Welfare - EXAMPLES: Bob is alive and well but has minor injury, please tell jane
+#                    80 - Practice Weekly
+#                    100 - Practice Monthly
+#                    200 - Ad Hoc, just for fun rag chew
+#                    255 - Max for unsigned tiny int
+#
+# flags:            The flags to control how content is delivered or not at all
+#
+#                    0x01 - Visible on web site
+#                    0x02 - Something else
+#                    0x04 -
+#                    0x08 - 
+#
+# status:            fixed list decided by me, allows people to select from a short list of types
+#                    10 - Active
+#                    50 - Archive
+#                    60 - Deleted
+#
+# primary_image_id:    The ID of the image to show in listings and top of net page.
+# synopsis:            The short or brief description of the net (optional).
+# description:        The longer text description of the net (optional).
+#
+# date_added:        The UTC date and time the record was added.
+# last_updated:        The UTC date and time the record was last updated.
+#
+create table ciniki_qni_nets (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    name varchar(150) not null,
+    permalink varchar(150) not null,
+    net_type tinyint unsigned not null,
+    flags tinyint unsigned not null,
+    status tinyint unsigned not null,
+    primary_image_id int not null,
+    synopsis varchar(1000) not null,
+    description varchar(20000) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index (business_id, name),
+    index sync (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';
